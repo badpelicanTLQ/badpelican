@@ -168,9 +168,17 @@ def _parse_badnet_markers(soup: BeautifulSoup) -> list[Tournament]:
         if soup.select_one("[data-ic_js='searchResult']") is not None:
             return []
         raise RuntimeError("Les résultats de tournois BadNet sont introuvables.")
+    raw_markers = str(markers.get("data-markers", "[]"))
     try:
-        records = json.loads(str(markers.get("data-markers", "[]")))
+        records = json.loads(raw_markers)
     except json.JSONDecodeError as exc:
+        excerpt_start = max(0, exc.pos - 80)
+        excerpt_end = min(len(raw_markers), exc.pos + 80)
+        LOGGER.error(
+            "JSON BadNet invalide à la position %d : %r",
+            exc.pos,
+            raw_markers[excerpt_start:excerpt_end],
+        )
         raise RuntimeError("Les données de tournois renvoyées par BadNet sont invalides.") from exc
     if not isinstance(records, list):
         raise RuntimeError("Le format des résultats de tournois BadNet est inattendu.")
