@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "0 * * * *"
   workflow_dispatch:
+    inputs:
+      test_whatsapp:
+        description: "Envoyer un message de test au groupe WhatsApp sans lancer le scraper"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -32,11 +38,22 @@ jobs:
       - name: Vérifier les tournois et envoyer les alertes
         id: checker
         continue-on-error: true
+        if: ${{ inputs.test_whatsapp != true }}
         env:
           WHATSAPP_INSTANCE_ID: ${{ secrets.WHATSAPP_INSTANCE_ID }}
           WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
           WHATSAPP_CHAT_ID: ${{ secrets.WHATSAPP_CHAT_ID }}
         run: python main.py
+
+      - name: Envoyer un message de test WhatsApp
+        id: whatsapp-test
+        if: ${{ inputs.test_whatsapp == true }}
+        env:
+          WHATSAPP_INSTANCE_ID: ${{ secrets.WHATSAPP_INSTANCE_ID }}
+          WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
+          WHATSAPP_CHAT_ID: ${{ secrets.WHATSAPP_CHAT_ID }}
+        run: |
+          python -c "from main import send_whatsapp_message; send_whatsapp_message('✅ Test BadPelican : la connexion WhatsApp fonctionne. Aucun tournoi n’a été recherché lors de ce test.')"
 
       - name: Enregistrer l'état des notifications
         if: always()
@@ -52,5 +69,5 @@ jobs:
           fi
 
       - name: Signaler un échec du vérificateur
-        if: steps.checker.outcome == 'failure'
+        if: steps.checker.outcome == 'failure' || steps.whatsapp-test.outcome == 'failure'
         run: exit 1
