@@ -165,21 +165,27 @@ def _request_tournament_page(
 def _parse_badnet_markers(soup: BeautifulSoup) -> list[Tournament]:
     markers = soup.select_one(".b-markers[data-markers]")
     if markers is None:
-        if soup.select_one("[data-ic_js='searchResult']") is not None:
-            return []
-        raise RuntimeError("Les résultats de tournois BadNet sont introuvables.")
-    raw_markers = str(markers.get("data-markers", "[]"))
-    try:
-        records = json.loads(raw_markers)
-    except json.JSONDecodeError as exc:
-        excerpt_start = max(0, exc.pos - 80)
-        excerpt_end = min(len(raw_markers), exc.pos + 80)
-        LOGGER.error(
-            "JSON BadNet invalide à la position %d : %r",
-            exc.pos,
-            raw_markers[excerpt_start:excerpt_end],
-        )
-        raise RuntimeError("Les données de tournois renvoyées par BadNet sont invalides.") from exc
+        if soup.select_one("[data-ic_js='searchResult']") is None:
+            raise RuntimeError("Les résultats de tournois BadNet sont introuvables.")
+        records = []
+    else:
+        raw_markers = str(markers.get("data-markers", "[]"))
+        if raw_markers.strip():
+            try:
+                records = json.loads(raw_markers)
+            except json.JSONDecodeError as exc:
+                excerpt_start = max(0, exc.pos - 80)
+                excerpt_end = min(len(raw_markers), exc.pos + 80)
+                LOGGER.error(
+                    "JSON BadNet invalide à la position %d : %r",
+                    exc.pos,
+                    raw_markers[excerpt_start:excerpt_end],
+                )
+                raise RuntimeError(
+                    "Les données de tournois renvoyées par BadNet sont invalides."
+                ) from exc
+        else:
+            records = []
     if not isinstance(records, list):
         raise RuntimeError("Le format des résultats de tournois BadNet est inattendu.")
 
@@ -218,6 +224,37 @@ def _parse_badnet_markers(soup: BeautifulSoup) -> list[Tournament]:
                 event_date=event_date,
                 url=url,
                 coordinates=coordinates,
+                is_full=is_full,
+            )
+        )
+
+    if tournaments:
+        return tournaments
+
+    # The map marker payload can be empty even when BadNet has rendered result
+    # rows, so use the visible cards as a fallback and geocode their city later.
+    for row in soup.select(".b-row a.row[href]"):
+        name_element = row.select_one(".name")
+        city_element = row.select_one(".location")
+        if name_element is None or city_element is None:
+            continue
+        name = name_element.get_text(" ", strip=True)
+        city = city_element.get_text(" ", strip=True)
+        date_element = row.select_one(".date")
+        event_date = date_element.get_text(" ", strip=True) if date_element else "Date à confirmer"
+        if not name or not city or "comité départemental" in city.casefold():
+            continue
+        gauges = row.select(".b-jauge")
+        limit = row.select_one(".limit")
+        is_full = (
+            bool(gauges) and all(_is_gauge_full(gauge) for gauge in gauges)
+        ) or bool(limit and "full" in limit.get("class", []))
+        tournaments.append(
+            Tournament(
+                name=name,
+                city=city,
+                event_date=event_date,
+                url=urljoin(BADNET_BASE_URL, str(row.get("href", ""))),
                 is_full=is_full,
             )
         )
