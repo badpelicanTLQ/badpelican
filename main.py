@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import tempfile
 import time
 from dataclasses import dataclass
@@ -24,7 +25,7 @@ MAX_DISTANCE_KM = 100
 BADNET_BASE_URL = "https://badnet.fr"
 # Nearby departments, including neighboring areas whose boundary towns can be
 # within 100 km. The geodesic check below is the final distance filter.
-SEARCH_DEPARTMENTS = ("92", "94", "78", "93", "2423", "79", "90", "108")
+SEARCH_DEPARTMENTS = ("92", "94", "78", "93", "2423", "90", "108", "91", "79")
 STATE_PATH = Path(__file__).with_name("sent_tournaments.json")
 REQUEST_TIMEOUT_SECONDS = 20
 
@@ -42,6 +43,7 @@ class Tournament:
     event_date: str
     url: str
     coordinates: tuple[float, float] | None = None
+    is_full: bool = False
 
 
 def _route_data(element: Tag) -> dict[str, Any]:
@@ -197,6 +199,10 @@ def _parse_badnet_markers(soup: BeautifulSoup) -> list[Tournament]:
                 coordinates = (float(latitude), float(longitude))
             except (TypeError, ValueError):
                 LOGGER.warning("Coordonnées invalides pour le tournoi %s.", name)
+        gauges = BeautifulSoup(
+            str(record.get("participants") or ""), "html.parser"
+        ).select(".b-jauge")
+        is_full = bool(gauges) and all(_is_gauge_full(gauge) for gauge in gauges)
         tournaments.append(
             Tournament(
                 name=name,
@@ -204,9 +210,22 @@ def _parse_badnet_markers(soup: BeautifulSoup) -> list[Tournament]:
                 event_date=event_date,
                 url=url,
                 coordinates=coordinates,
+                is_full=is_full,
             )
         )
     return tournaments
+
+
+def _is_gauge_full(gauge: Tag) -> bool:
+    status = gauge.select_one(".jauge")
+    if status and "full" in status.get("class", []):
+        return True
+
+    count = gauge.select_one(".count")
+    if count is None:
+        return False
+    match = re.search(r"(\d+)\s*/\s*(\d+)", count.get_text(" ", strip=True))
+    return bool(match and int(match.group(2)) > 0 and int(match.group(1)) >= int(match.group(2)))
 
 
 def get_open_tournaments() -> list[Tournament]:
@@ -332,6 +351,9 @@ def main() -> None:
 
     for tournament in tournaments:
         if tournament.url in sent:
+            continue
+        if tournament.is_full:
+            LOGGER.info("Tournoi complet ignoré : %s (%s).", tournament.name, tournament.city)
             continue
 
         coordinates = tournament.coordinates or _coordinates_for_city(
