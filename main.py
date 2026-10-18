@@ -163,7 +163,9 @@ def _request_tournament_page(
 def _parse_badnet_markers(soup: BeautifulSoup) -> list[Tournament]:
     markers = soup.select_one(".b-markers[data-markers]")
     if markers is None:
-        return []
+        if soup.select_one("[data-ic_js='searchResult']") is not None:
+            return []
+        raise RuntimeError("Les résultats de tournois BadNet sont introuvables.")
     try:
         records = json.loads(str(markers.get("data-markers", "[]")))
     except json.JSONDecodeError as exc:
