@@ -1,4 +1,37 @@
 {
-  "geocode_cache": {},
-  "sent": []
+  "geocode_cache": {
+    "arles": [
+      43.6776223,
+      4.6309653
+    ],
+    "eyguières": [
+      43.695131,
+      5.0297213
+    ],
+    "nîmes": [
+      43.8374249,
+      4.3600687
+    ],
+    "pélissanne": [
+      43.6306683,
+      5.1496735
+    ],
+    "rognes": [
+      43.6638292,
+      5.3469001
+    ]
+  },
+  "sent": [
+    "https://badnet.fr/tournoi/public?eventid=50823",
+    "https://badnet.fr/tournoi/public?eventid=50867",
+    "https://badnet.fr/tournoi/public?eventid=51686",
+    "https://badnet.fr/tournoi/public?eventid=51842",
+    "https://badnet.fr/tournoi/public?eventid=52189",
+    "https://badnet.fr/tournoi/public?eventid=52247",
+    "https://badnet.fr/tournoi/public?eventid=52361",
+    "https://badnet.fr/tournoi/public?eventid=52653",
+    "https://badnet.fr/tournoi/public?eventid=52919",
+    "https://badnet.fr/tournoi/public?eventid=52926",
+    "https://badnet.fr/tournoi/public?eventid=53046"
+  ]
 }
