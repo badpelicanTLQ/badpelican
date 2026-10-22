@@ -1,5 +1,9 @@
 {
   "geocode_cache": {
+    "aix-en-provence": [
+      43.5298424,
+      5.4474738
+    ],
     "arles": [
       43.6776223,
       4.6309653
@@ -19,6 +23,10 @@
     "rognes": [
       43.6638292,
       5.3469001
+    ],
+    "saint-mathieu-de-tréviers": [
+      43.7694101,
+      3.8644554
     ]
   },
   "sent": [
@@ -34,6 +42,7 @@
     "https://badnet.fr/tournoi/public?eventid=52919",
     "https://badnet.fr/tournoi/public?eventid=52926",
     "https://badnet.fr/tournoi/public?eventid=53046",
-    "https://badnet.fr/tournoi/public?eventid=53085"
+    "https://badnet.fr/tournoi/public?eventid=53085",
+    "https://badnet.fr/tournoi/public?eventid=53172"
   ]
 }
