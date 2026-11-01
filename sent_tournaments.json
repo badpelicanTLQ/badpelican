@@ -39,6 +39,10 @@
     "saint-mathieu-de-tréviers": [
       43.7694101,
       3.8644554
+    ],
+    "sérignan": [
+      43.2830736,
+      3.2798682
     ]
   },
   "sent": [
@@ -62,6 +66,8 @@
     "https://badnet.fr/tournoi/public?eventid=53278",
     "https://badnet.fr/tournoi/public?eventid=53279",
     "https://badnet.fr/tournoi/public?eventid=53307",
-    "https://badnet.fr/tournoi/public?eventid=53320"
+    "https://badnet.fr/tournoi/public?eventid=53320",
+    "https://badnet.fr/tournoi/public?eventid=53415",
+    "https://badnet.fr/tournoi/public?eventid=53438"
   ]
 }
