@@ -20,6 +20,10 @@
       45.1717613,
       -0.541972
     ],
+    "marseille": [
+      43.2963986,
+      5.3777888
+    ],
     "milhaud 30": [
       43.6110292,
       3.8571137
@@ -57,6 +61,7 @@
     "https://badnet.fr/tournoi/public?eventid=50650",
     "https://badnet.fr/tournoi/public?eventid=50823",
     "https://badnet.fr/tournoi/public?eventid=50867",
+    "https://badnet.fr/tournoi/public?eventid=51184",
     "https://badnet.fr/tournoi/public?eventid=51686",
     "https://badnet.fr/tournoi/public?eventid=51842",
     "https://badnet.fr/tournoi/public?eventid=52189",
