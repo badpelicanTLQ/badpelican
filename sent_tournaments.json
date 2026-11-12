@@ -12,6 +12,10 @@
       43.2924385,
       5.5703031
     ],
+    "calvisson": [
+      43.7853458,
+      4.1900505
+    ],
     "eyguières": [
       43.695131,
       5.0297213
@@ -23,6 +27,10 @@
     "marseille": [
       43.2963986,
       5.3777888
+    ],
+    "milhaud": [
+      43.7896802,
+      4.3084497
     ],
     "milhaud 30": [
       43.6110292,
@@ -86,6 +94,8 @@
     "https://badnet.fr/tournoi/public?eventid=53438",
     "https://badnet.fr/tournoi/public?eventid=53443",
     "https://badnet.fr/tournoi/public?eventid=53451",
-    "https://badnet.fr/tournoi/public?eventid=53772"
+    "https://badnet.fr/tournoi/public?eventid=53772",
+    "https://badnet.fr/tournoi/public?eventid=53781",
+    "https://badnet.fr/tournoi/public?eventid=53782"
   ]
 }
